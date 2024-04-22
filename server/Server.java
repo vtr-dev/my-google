@@ -118,11 +118,11 @@ class ConnectionHandler extends Thread {
         try (Scanner scanner = new Scanner(file)) {
           int lineNum = 1;
 
-          while (scanner.hasNextLine() && results.size() < MAX_RESULTS) {
+          while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
 
             if (line.contains(data)) {
-              String snippet = getSnippetAroundPhrase(line, data);
+              String snippet = getSnippetAroundKeyWords(line, data);
               String result = "Resultado " + (totalResults + 1) + ":\n" +
                   "Nome do arquivo: " + file.getName() + "\n" +
                   "Linha: " + lineNum + "\n" +
@@ -138,12 +138,15 @@ class ConnectionHandler extends Thread {
     }
 
     if (!results.isEmpty()) {
-      String message = "Número total de resultados: " + totalResults + "\n\n";
       if (totalResults > MAX_RESULTS) {
-        message += String.join("\n", results.subList(0, MAX_RESULTS));
+
+        String message = String.join("\n", results.subList(0, MAX_RESULTS));
+        message += "\n\nTotal de resultados: " + totalResults + "\n" + (totalResults - MAX_RESULTS)
+            + " resultados não exibidos.";
         oos.writeObject(message);
       } else {
-        message += String.join("\n", results);
+        String message = String.join("\n", results);
+        message += "\n\nTotal de resultados: " + totalResults;
         oos.writeObject(message);
       }
     } else {
@@ -203,7 +206,7 @@ class ConnectionHandler extends Thread {
     }
   }
 
-  private String getSnippetAroundPhrase(String line, String keyWords) {
+  private String getSnippetAroundKeyWords(String line, String keyWords) {
     int SNIPPET_SIZE = 255;
     String[] words = keyWords.trim().split("\\s+");
 

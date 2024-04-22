@@ -122,20 +122,21 @@ public class Client {
   }
 
   private static void sendRequest(Socket socket, SocketRequest request) throws IOException, ClassNotFoundException {
+    long startTime = System.currentTimeMillis();
     try {
       ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
       oos.writeObject(request);
-
       ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
       String response = (String) ois.readObject();
       System.out.println("\n\n##### RESPOSTA DO SERVIDOR #####\n" + response + "\n");
-
       ois.close();
       oos.close();
-    } catch (IOException e) {
+    } catch (IOException | ClassNotFoundException e) {
       e.printStackTrace();
-    } catch (ClassNotFoundException e) {
-      e.printStackTrace();
+    } finally {
+      long endTime = System.currentTimeMillis();
+      long duration = endTime - startTime;
+      System.out.println("\nTempo da requisição: " + duration + "ms\n");
     }
   }
 
